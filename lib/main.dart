@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prototipo/screens/ventana_principal.dart';
+import 'package:prototipo/presentation/screens/ventana_principal.dart';
 
 void main() {
   runApp(const MainApp());

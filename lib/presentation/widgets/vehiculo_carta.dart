@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prototipo/models/vehiculo.dart';
+import 'package:prototipo/data/models/vehiculo.dart';
 
 class VehiculoCarta extends StatelessWidget {
   final Vehiculo vehiculo;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prototipo/models/vehiculo.dart';
+import 'package:prototipo/data/models/vehiculo.dart';
 
 class PagoScreen extends StatefulWidget {
   final Vehiculo vehiculo;

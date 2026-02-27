@@ -1,4 +1,4 @@
-import 'package:prototipo/models/vehiculo.dart';
+import 'package:prototipo/data/models/vehiculo.dart';
 
 final List<Vehiculo> vehiculos = [
   Vehiculo(

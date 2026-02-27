@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prototipo/data/vehiculos_datos.dart';
-import 'package:prototipo/widgets/vehiculo_carta.dart';
+import 'package:prototipo/data/datasources/vehiculos_datos.dart';
+import 'package:prototipo/presentation/widgets/vehiculo_carta.dart';
 import 'vehiculo_detalles.dart';
 
 class VentanaPrincipal extends StatefulWidget {
