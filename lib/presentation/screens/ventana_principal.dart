@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:prototipo/data/datasources/vehiculos_datos.dart';
 import 'package:prototipo/presentation/widgets/vehiculo_carta.dart';
+import 'package:prototipo/presentation/providers/auth_provider.dart';
+import 'package:prototipo/presentation/dialogs/guest_purchase_block_dialog.dart';
 import 'vehiculo_detalles.dart';
 
 class VentanaPrincipal extends StatefulWidget {
@@ -30,7 +33,73 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
     final items = filteredVehicles();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Marketplace de Vehículos')),
+      appBar: AppBar(
+        title: const Text('Marketplace de Vehículos'),
+        actions: [
+          Consumer<AuthProvider>(
+            builder: (context, authProvider, _) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Center(
+                  child: PopupMenuButton<String>(
+                    itemBuilder: (context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        enabled: false,
+                        child: Row(
+                          children: [
+                            Icon(
+                              authProvider.isGuest
+                                  ? Icons.person_outline
+                                  : Icons.person,
+                              color: Colors.blue,
+                            ),
+                            SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  authProvider.isGuest
+                                      ? 'Guest'
+                                      : authProvider.user?.email ?? 'Usuario',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                if (authProvider.isGuest)
+                                  Text(
+                                    'No hay compras disponibles',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuDivider(),
+                      PopupMenuItem<String>(
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, color: Colors.red),
+                            SizedBox(width: 10),
+                            Text('Cerrar sesión'),
+                          ],
+                        ),
+                        onTap: () async {
+                          await authProvider.logout();
+                          if (context.mounted) {
+                            Navigator.pushReplacementNamed(context, '/login');
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           // hero/banner area
@@ -93,6 +162,13 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                 return VehiculoCarta(
                   vehiculo: items[index],
                   onTap: () {
+                    // Verificar si es guest
+                    final authProvider = context.read<AuthProvider>();
+                    if (authProvider.isGuest) {
+                      GuestPurchaseBlockDialog.show(context);
+                      return;
+                    }
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(

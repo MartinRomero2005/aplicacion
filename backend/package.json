@@ -1,32 +1,24 @@
 {
-  "name": "prototipo",
+  "name": "prototipo-backend",
   "version": "1.0.0",
-  "description": "A new Flutter project.",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
+  "description": "Backend API RESTful para aplicación de pedidos",
+  "main": "src/app.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MartinRomero2005/aplicacion.git"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/MartinRomero2005/aplicacion/issues"
-  },
-  "homepage": "https://github.com/MartinRomero2005/aplicacion#readme",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.0.2"
   }
 }
