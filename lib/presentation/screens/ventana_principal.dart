@@ -53,18 +53,21 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                                   : Icons.person,
                               color: Colors.blue,
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   authProvider.isGuest
                                       ? 'Guest'
-                                      : authProvider.user?.email ?? 'Usuario',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                      : authProvider.user?["email"] ??
+                                            'Usuario',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 if (authProvider.isGuest)
-                                  Text(
+                                  const Text(
                                     'No hay compras disponibles',
                                     style: TextStyle(
                                       fontSize: 12,
@@ -78,18 +81,20 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                       ),
                       const PopupMenuDivider(),
                       PopupMenuItem<String>(
-                        child: Row(
+                        child: const Row(
                           children: [
                             Icon(Icons.logout, color: Colors.red),
                             SizedBox(width: 10),
                             Text('Cerrar sesión'),
                           ],
                         ),
-                        onTap: () async {
-                          await authProvider.logout();
-                          if (context.mounted) {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          }
+                        onTap: () {
+                          authProvider.logout();
+                          Future.microtask(() {
+                            if (context.mounted) {
+                              Navigator.pushReplacementNamed(context, '/login');
+                            }
+                          });
                         },
                       ),
                     ],
@@ -102,18 +107,15 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
       ),
       body: Column(
         children: [
-          // hero/banner area
+          // Banner superior
           Container(
             height: 120,
             width: double.infinity,
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: NetworkImage(
-                  'https://i.imgur.com/0y8Ftya.png', // placeholder image
-                ),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage('https://i.imgur.com/0y8Ftya.png'),
                 fit: BoxFit.cover,
               ),
-              color: Colors.indigo,
             ),
             alignment: Alignment.center,
             child: Text(
@@ -124,6 +126,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
               ),
             ),
           ),
+
+          // Filtro por categoría
           SizedBox(
             height: 60,
             child: ListView.builder(
@@ -148,6 +152,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
               },
             ),
           ),
+
+          // Grid de vehículos
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.all(12),
@@ -162,8 +168,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                 return VehiculoCarta(
                   vehiculo: items[index],
                   onTap: () {
-                    // Verificar si es guest
                     final authProvider = context.read<AuthProvider>();
+
                     if (authProvider.isGuest) {
                       GuestPurchaseBlockDialog.show(context);
                       return;

@@ -1,113 +1,136 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../data/models/user_model.dart';
-import '../../data/services/auth_service.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AuthProvider extends ChangeNotifier {
-  User? _user;
-  bool _loading = false;
+  Map<String, dynamic>? _currentUser;
   String? _error;
-  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+  bool _isGuest = false;
 
-  User? get user => _user;
-  bool get loading => _loading;
+  // =========================
+  // GETTERS
+  // =========================
+
+  Map<String, dynamic>? get user => _currentUser;
+
+  bool get isAuthenticated => _currentUser != null;
+
+  bool get isGuest => _isGuest;
+
+  bool get loading => _isLoading;
+
   String? get error => _error;
-  bool get isAuthenticated => _user != null && !_user!.isGuest;
-  bool get isGuest => _user?.isGuest ?? false;
 
-  AuthProvider() {
-    _loadUserFromPrefs();
-  }
+  // =========================
+  // REGISTER
+  // =========================
 
-  Future<void> _loadUserFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString('user');
-    if (userJson != null) {
-      try {
-        final decoded = jsonDecode(userJson);
-        _user = User(
-          email: decoded['email'],
-          token: decoded['token'],
-          isGuest: decoded['isGuest'] ?? false,
-        );
-        notifyListeners();
-      } catch (e) {
-        // Error al decodificar, limpiar
-        prefs.remove('user');
-      }
-    }
-  }
-
-  Future<void> _saveUserToPrefs(User user) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', jsonEncode({
-      'email': user.email,
-      'token': user.token,
-      'isGuest': user.isGuest,
-    }));
-  }
-
-  Future<bool> register(String email, String password) async {
-    _loading = true;
+  Future<bool> register(String name, String email, String password) async {
+    _isLoading = true;
     _error = null;
     notifyListeners();
 
-    final result = await _authService.register(email, password);
-
-    if (result['success']) {
-      _user = User(
-        email: email,
-        token: result['data']['token'],
+    try {
+      final response = await http.post(
+        Uri.parse("http://10.0.2.2:3000/api/auth/register"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"name": name, "email": email, "password": password}),
       );
-      await _saveUserToPrefs(_user!);
-      _loading = false;
-      notifyListeners();
-      return true;
-    } else {
-      _error = result['error'];
-      _loading = false;
+
+      print("REGISTER STATUS: ${response.statusCode}");
+      print("REGISTER BODY: ${response.body}");
+
+      final data = jsonDecode(response.body);
+
+      // 🔥 Aceptamos 200 o 201
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Si backend devuelve usuario
+        if (data["user"] != null) {
+          _currentUser = data["user"];
+        } else {
+          // Si backend NO devuelve usuario, lo creamos manualmente
+          _currentUser = {"name": name, "email": email};
+        }
+
+        _isGuest = false;
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _error = data["message"] ?? "Registration failed";
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      print("REGISTER ERROR: $e");
+      _error = "Connection error";
+      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
+
+  // =========================
+  // LOGIN
+  // =========================
 
   Future<bool> login(String email, String password) async {
-    _loading = true;
+    _isLoading = true;
     _error = null;
+    _isGuest = false;
     notifyListeners();
 
-    final result = await _authService.login(email, password);
+    try {
+      final response = await http.post(
+        Uri.parse("http://10.0.2.2:3000/api/auth/login"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": password}),
+      );
 
-    if (result['success']) {
-      _user = result['data'];
-      await _saveUserToPrefs(_user!);
-      _loading = false;
-      notifyListeners();
-      return true;
-    } else {
-      _error = result['error'];
-      _loading = false;
+      print("LOGIN STATUS: ${response.statusCode}");
+      print("LOGIN BODY: ${response.body}");
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        _currentUser = data["user"];
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _error = data["message"] ?? "Login failed";
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      print("LOGIN ERROR: $e");
+      _error = "Connection error";
+      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
+  // =========================
+  // LOGIN COMO INVITADO
+  // =========================
+
   void loginAsGuest() {
-    _user = User.guest();
+    _currentUser = null;
+    _isGuest = true;
     notifyListeners();
   }
 
-  Future<void> logout() async {
-    _user = null;
-    _error = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('user');
-    notifyListeners();
-  }
+  // =========================
+  // LOGOUT
+  // =========================
 
-  void clearError() {
-    _error = null;
+  void logout() {
+    _currentUser = null;
+    _isGuest = false;
     notifyListeners();
   }
 }
