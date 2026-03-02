@@ -1,10 +1,10 @@
 const db = require("../config/database");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
-// =========================
 // REGISTER
-// =========================
 const register = async (req, res) => {
+  console.log("🔥 REGISTER ENDPOINT HIT 🔥"); // Para debug
+
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -19,7 +19,8 @@ const register = async (req, res) => {
       [name, email, hashedPassword],
       function (err) {
         if (err) {
-          return res.status(400).json({ message: "User already exists" });
+          console.error("DB ERROR:", err.message);
+          return res.status(500).json({ message: err.message });
         }
 
         return res.status(201).json({
@@ -33,14 +34,15 @@ const register = async (req, res) => {
       }
     );
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-// =========================
 // LOGIN
-// =========================
 const login = (req, res) => {
+  console.log("🔥 LOGIN ENDPOINT HIT 🔥"); // Para debug
+
   const { email, password } = req.body;
 
   if (!email || !password) {

@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: BorderRadius.circular(50),
                                     ),
                                   ),
-                                  onPressed: authProvider.loading
+                                  onPressed: authProvider.isLoading
                                       ? null
                                       : () async {
                                           final email = _emailController.text
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                                             );
                                           }
                                         },
-                                  child: authProvider.loading
+                                  child: authProvider.isLoading
                                       ? SizedBox(
                                           height: 20,
                                           width: 20,

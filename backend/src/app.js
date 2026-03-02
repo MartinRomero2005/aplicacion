@@ -1,4 +1,3 @@
-console.log("🔥 ESTE ES EL BACKEND CORRECTO 🔥");
 const express = require("express");
 const cors = require("cors");
 const app = express();

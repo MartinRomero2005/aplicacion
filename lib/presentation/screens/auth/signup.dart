@@ -26,6 +26,8 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _handleSignUp() async {
+    print("Botón SignUp presionado");
+
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -49,16 +51,29 @@ class _SignUpPageState extends State<SignUpPage> {
     }
 
     final authProvider = context.read<AuthProvider>();
-    final success = await authProvider.register(name, email, password);
 
-    if (success && mounted) {
+    print("Llamando a register...");
+    final success = await authProvider.register(name, email, password);
+    print("Resultado register: $success");
+
+    if (!mounted) return;
+
+    if (success) {
       Navigator.pushReplacementNamed(context, '/main');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.error ?? "Error al registrar usuario"),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final error = context.watch<AuthProvider>().error;
+    final authProvider = context.watch<AuthProvider>();
+    final error = authProvider.error;
+    final isLoading = authProvider.isLoading;
 
     return Scaffold(
       body: Container(
@@ -81,9 +96,9 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
+              children: [
                 Column(
-                  children: const <Widget>[
+                  children: const [
                     SizedBox(height: 40),
                     Padding(
                       padding: EdgeInsets.all(20),
@@ -106,6 +121,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ],
                 ),
+
+                // Parte blanca inferior
                 Container(
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -118,7 +135,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
+                      children: [
                         const SizedBox(height: 40),
 
                         if (error != null)
@@ -144,6 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         const SizedBox(height: 20),
 
+                        // Caja con sombra
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -157,69 +175,27 @@ class _SignUpPageState extends State<SignUpPage> {
                             ],
                           ),
                           child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade200,
-                                    ),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _nameController,
-                                  decoration: const InputDecoration(
-                                    hintText: "Full Name",
-                                    border: InputBorder.none,
-                                  ),
-                                ),
+                            children: [
+                              _buildInputField(
+                                controller: _nameController,
+                                hint: "Full Name",
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade200,
-                                    ),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _emailController,
-                                  decoration: const InputDecoration(
-                                    hintText: "Email",
-                                    border: InputBorder.none,
-                                  ),
-                                ),
+
+                              _buildInputField(
+                                controller: _emailController,
+                                hint: "Email",
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade200,
-                                    ),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                    hintText: "Password",
-                                    border: InputBorder.none,
-                                  ),
-                                ),
+
+                              _buildInputField(
+                                controller: _passwordController,
+                                hint: "Password",
+                                obscure: true,
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                child: TextField(
-                                  controller: _confirmPasswordController,
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                    hintText: "Confirm Password",
-                                    border: InputBorder.none,
-                                  ),
-                                ),
+
+                              _buildInputField(
+                                controller: _confirmPasswordController,
+                                hint: "Confirm Password",
+                                obscure: true,
                               ),
                             ],
                           ),
@@ -227,6 +203,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         const SizedBox(height: 30),
 
+                        // Botón Sign Up
                         SizedBox(
                           width: double.infinity,
                           height: 50,
@@ -239,20 +216,25 @@ class _SignUpPageState extends State<SignUpPage> {
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                               ),
-                              onPressed: _handleSignUp,
-                              child: const Text(
-                                "Sign Up",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              onPressed: isLoading ? null : _handleSignUp,
+                              child: isLoading
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : const Text(
+                                      "Sign Up",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
 
                         const SizedBox(height: 20),
 
+                        // Botón Invitado
                         SizedBox(
                           width: double.infinity,
                           height: 50,
@@ -281,7 +263,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
+                          children: [
                             const Text(
                               "Already have an account? ",
                               style: TextStyle(color: Colors.grey),
@@ -315,6 +297,24 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hint,
+    bool obscure = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        decoration: InputDecoration(hintText: hint, border: InputBorder.none),
       ),
     );
   }

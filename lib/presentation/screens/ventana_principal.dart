@@ -53,14 +53,14 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                                   : Icons.person,
                               color: Colors.blue,
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 1),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   authProvider.isGuest
                                       ? 'Guest'
-                                      : authProvider.user?["email"] ??
+                                      : authProvider.currentUser?["email"] ??
                                             'Usuario',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
