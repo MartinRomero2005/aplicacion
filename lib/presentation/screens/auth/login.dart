@@ -81,7 +81,9 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.shade900.withOpacity(0.2),
+                                color: Colors.blue.shade900.withValues(
+                                  alpha: 0.2,
+                                ),
                                 blurRadius: 20,
                                 offset: Offset(
                                   0,
@@ -104,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                                 child: TextField(
                                   controller: _emailController,
                                   decoration: InputDecoration(
-                                    hintText: "Username or Email",
+                                    hintText: "Input your Email",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                   ),
@@ -123,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                                   controller: _passwordController,
                                   obscureText: true,
                                   decoration: InputDecoration(
-                                    hintText: "Password",
+                                    hintText: "Input your Password",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                   ),

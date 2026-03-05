@@ -26,8 +26,6 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _handleSignUp() async {
-    print("Botón SignUp presionado");
-
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -168,7 +166,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.shade900.withOpacity(0.2),
+                                color: Colors.blue.shade900.withValues(
+                                  alpha: 0.2,
+                                ),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
