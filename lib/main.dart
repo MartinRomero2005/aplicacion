@@ -56,11 +56,9 @@ class HomeRouter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
-        // Si el usuario está autenticado, mostrar pantalla principal
         if (authProvider.isAuthenticated || authProvider.isGuest) {
           return const VentanaPrincipal();
         }
-        // Si no, mostrar pantalla de login
         return const LoginPage();
       },
     );

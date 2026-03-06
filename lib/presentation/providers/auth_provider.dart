@@ -14,14 +14,15 @@ class AuthProvider extends ChangeNotifier {
   bool get isGuest => _isGuest;
   bool get isAuthenticated => _currentUser != null || _isGuest;
 
-  // ⚠ Para emulador Android usar 10.0.2.2
-  final String baseUrl = "http://10.0.2.2:3000/api/auth";
+  // 🔥 IP de tu computadora en la red WiFi
+  final String baseUrl = "http://192.168.1.4:3000/api/auth";
 
   Future<bool> register(String name, String email, String password) async {
     _setLoading(true);
 
     try {
       print("Enviando registro...");
+      print("URL: $baseUrl/register");
 
       final response = await http
           .post(
@@ -36,20 +37,24 @@ class AuthProvider extends ChangeNotifier {
           .timeout(const Duration(seconds: 10));
 
       print("Respuesta registro: ${response.statusCode}");
+      print("Body: ${response.body}");
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
         _currentUser = data["user"];
         _isGuest = false;
+        notifyListeners();
         return true;
       } else {
         _error = data["message"] ?? "Error en el registro";
+        notifyListeners();
         return false;
       }
     } catch (e) {
       print("Error en register: $e");
       _error = "Error de conexión con el servidor";
+      notifyListeners();
       return false;
     } finally {
       _setLoading(false);
@@ -61,6 +66,7 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       print("Enviando login...");
+      print("URL: $baseUrl/login");
 
       final response = await http
           .post(
@@ -71,20 +77,24 @@ class AuthProvider extends ChangeNotifier {
           .timeout(const Duration(seconds: 10));
 
       print("Respuesta login: ${response.statusCode}");
+      print("Body: ${response.body}");
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         _currentUser = data["user"];
         _isGuest = false;
+        notifyListeners();
         return true;
       } else {
         _error = data["message"] ?? "Credenciales incorrectas";
+        notifyListeners();
         return false;
       }
     } catch (e) {
       print("Error en login: $e");
       _error = "No se pudo conectar al servidor";
+      notifyListeners();
       return false;
     } finally {
       _setLoading(false);
