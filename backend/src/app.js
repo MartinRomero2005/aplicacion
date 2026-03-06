@@ -8,6 +8,10 @@ app.use(express.json());
 const authRoutes = require("./routes/auth.routes");
 app.use("/api/auth", authRoutes);
 
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+app.get("/", (req, res) => {
+  res.send("Servidor funcionando correctamente");
+});
+
+app.listen(3000, '0.0.0.0', () => {
+  console.log("Server running on http://0.0.0.0:3000");
 });

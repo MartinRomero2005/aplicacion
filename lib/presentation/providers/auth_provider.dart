@@ -14,19 +14,28 @@ class AuthProvider extends ChangeNotifier {
   bool get isGuest => _isGuest;
   bool get isAuthenticated => _currentUser != null || _isGuest;
 
+  // ⚠ Para emulador Android usar 10.0.2.2
   final String baseUrl = "http://10.0.2.2:3000/api/auth";
 
   Future<bool> register(String name, String email, String password) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    _setLoading(true);
 
     try {
-      final response = await http.post(
-        Uri.parse("$baseUrl/register"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"name": name, "email": email, "password": password}),
-      );
+      print("Enviando registro...");
+
+      final response = await http
+          .post(
+            Uri.parse("$baseUrl/register"),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({
+              "name": name,
+              "email": email,
+              "password": password,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      print("Respuesta registro: ${response.statusCode}");
 
       final data = jsonDecode(response.body);
 
@@ -39,25 +48,29 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      _error = "Error de conexión";
+      print("Error en register: $e");
+      _error = "Error de conexión con el servidor";
       return false;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
   Future<bool> login(String email, String password) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    _setLoading(true);
 
     try {
-      final response = await http.post(
-        Uri.parse("$baseUrl/login"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"email": email, "password": password}),
-      );
+      print("Enviando login...");
+
+      final response = await http
+          .post(
+            Uri.parse("$baseUrl/login"),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({"email": email, "password": password}),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      print("Respuesta login: ${response.statusCode}");
 
       final data = jsonDecode(response.body);
 
@@ -70,11 +83,11 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      _error = "Error de conexión";
+      print("Error en login: $e");
+      _error = "No se pudo conectar al servidor";
       return false;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
@@ -87,6 +100,12 @@ class AuthProvider extends ChangeNotifier {
   void logout() {
     _currentUser = null;
     _isGuest = false;
+    notifyListeners();
+  }
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    _error = null;
     notifyListeners();
   }
 }
