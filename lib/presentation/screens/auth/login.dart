@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
             const Padding(
               padding: EdgeInsets.all(20),
               child: Text(
-                "Login",
+                "Iniciar sesión",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 40,
@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
             const Padding(
               padding: EdgeInsets.all(20),
               child: Text(
-                "Welcome Back",
+                "Bienvenido de vuelta",
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                                 child: TextField(
                                   controller: _emailController,
                                   decoration: const InputDecoration(
-                                    hintText: "Input your Email",
+                                    hintText: "Ingresa tu correo electrónico",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                   ),
@@ -205,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                                   controller: _passwordController,
                                   obscureText: true,
                                   decoration: const InputDecoration(
-                                    hintText: "Input your Password",
+                                    hintText: "Ingresa tu contraseña",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                   ),
@@ -310,7 +310,7 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                         )
                                       : const Text(
-                                          "Login",
+                                          "Iniciar sesión",
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
@@ -344,7 +344,7 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   },
                                   child: const Text(
-                                    "Continue as Guest",
+                                    "Continua como invitado",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -354,7 +354,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const SizedBox(width: 30),
-                            const Text("or"),
+                            const Text("o"),
                             const SizedBox(width: 30),
                             Expanded(
                               child: SizedBox(
@@ -376,7 +376,7 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   },
                                   child: const Text(
-                                    "Make a new account",
+                                    "Crea una nueva cuenta",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

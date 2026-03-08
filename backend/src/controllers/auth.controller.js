@@ -127,9 +127,6 @@ const verifyEmail = (req, res) => {
   );
 };
 
-// =============================
-// RESET PASSWORD
-// =============================
 const resetPassword = async (req, res) => {
   const { email, password } = req.body;
 

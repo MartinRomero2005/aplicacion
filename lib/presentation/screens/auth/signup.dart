@@ -101,7 +101,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Padding(
                       padding: EdgeInsets.all(20),
                       child: Text(
-                        "Create Account",
+                        "Crear cuenta",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 40,
@@ -113,7 +113,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Padding(
                       padding: EdgeInsets.all(20),
                       child: Text(
-                        "Join us today",
+                        "Únete a nosotros hoy",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
@@ -176,23 +176,23 @@ class _SignUpPageState extends State<SignUpPage> {
                             children: [
                               _buildInputField(
                                 controller: _nameController,
-                                hint: "Full Name",
+                                hint: "Nombre completo",
                               ),
 
                               _buildInputField(
                                 controller: _emailController,
-                                hint: "Email",
+                                hint: "Correo electrónico",
                               ),
 
                               _buildInputField(
                                 controller: _passwordController,
-                                hint: "Password",
+                                hint: "Contraseña",
                                 obscure: true,
                               ),
 
                               _buildInputField(
                                 controller: _confirmPasswordController,
-                                hint: "Confirm Password",
+                                hint: "Confirmar Contraseña",
                                 obscure: true,
                               ),
                             ],
@@ -220,7 +220,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       color: Colors.white,
                                     )
                                   : const Text(
-                                      "Sign Up",
+                                      "Crear cuenta",
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -247,7 +247,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               Navigator.pushReplacementNamed(context, '/main');
                             },
                             child: const Text(
-                              "Continue as Guest",
+                              "Continua como invitado",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
