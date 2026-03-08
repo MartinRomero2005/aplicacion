@@ -120,7 +120,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ],
                 ),
 
-                // Parte blanca inferior
                 Container(
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -159,7 +158,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         const SizedBox(height: 20),
 
-                        // Caja con sombra
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -234,7 +232,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         const SizedBox(height: 20),
 
-                        // Botón Invitado
                         SizedBox(
                           width: double.infinity,
                           height: 50,

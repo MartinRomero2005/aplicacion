@@ -85,10 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                                   alpha: 0.2,
                                 ),
                                 blurRadius: 20,
-                                offset: Offset(
-                                  0,
-                                  10,
-                                ), // changes position of shadow
+                                offset: Offset(0, 10),
                               ),
                             ],
                           ),

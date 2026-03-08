@@ -75,7 +75,6 @@ class VehiculoDetalles extends StatelessWidget {
                       vehiculo.imagen,
                     );
 
-                    /// ir a pago
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const PagoScreen()),
