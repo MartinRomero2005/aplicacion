@@ -21,6 +21,95 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Recuperar contraseña"),
+          content: TextField(
+            controller: emailController,
+            decoration: const InputDecoration(labelText: "Ingresa tu correo"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final email = emailController.text.trim();
+
+                final exists = await context.read<AuthProvider>().verifyEmail(
+                  email,
+                );
+
+                if (!exists) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Correo no encontrado")),
+                  );
+                  return;
+                }
+
+                Navigator.pop(context);
+                _showResetPasswordDialog(email);
+              },
+              child: const Text("Verificar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showResetPasswordDialog(String email) {
+    final passwordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Nueva contraseña"),
+          content: TextField(
+            controller: passwordController,
+            obscureText: true,
+            decoration: const InputDecoration(labelText: "Nueva contraseña"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final password = passwordController.text;
+
+                final success = await context
+                    .read<AuthProvider>()
+                    .resetPassword(email, password);
+
+                Navigator.pop(context);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success
+                          ? "Contraseña actualizada"
+                          : "No se pudo cambiar la contraseña",
+                    ),
+                  ),
+                );
+              },
+              child: const Text("Cambiar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,8 +128,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Column(
           children: <Widget>[
-            SizedBox(height: 80),
-            Padding(
+            const SizedBox(height: 80),
+            const Padding(
               padding: EdgeInsets.all(20),
               child: Text(
                 "Login",
@@ -51,8 +140,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            Padding(
+            const SizedBox(height: 20),
+            const Padding(
               padding: EdgeInsets.all(20),
               child: Text(
                 "Welcome Back",
@@ -61,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(60),
@@ -69,12 +158,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
+
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -85,14 +175,14 @@ class _LoginPageState extends State<LoginPage> {
                                   alpha: 0.2,
                                 ),
                                 blurRadius: 20,
-                                offset: Offset(0, 10),
+                                offset: const Offset(0, 10),
                               ),
                             ],
                           ),
                           child: Column(
                             children: <Widget>[
                               Container(
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
@@ -102,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 child: TextField(
                                   controller: _emailController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText: "Input your Email",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
@@ -110,18 +200,11 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade200,
-                                    ),
-                                  ),
-                                ),
+                                padding: const EdgeInsets.all(10),
                                 child: TextField(
                                   controller: _passwordController,
                                   obscureText: true,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText: "Input your Password",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
@@ -131,33 +214,48 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 40),
+
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: _showForgotPasswordDialog,
+                            child: Text(
+                              "¿Olvidaste tu contraseña?",
+                              style: TextStyle(color: Colors.blue.shade900),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+
                         if (context.watch<AuthProvider>().error != null)
                           Container(
-                            padding: EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.red.shade100,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.error, color: Colors.red),
-                                SizedBox(width: 10),
+                                const Icon(Icons.error, color: Colors.red),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     context.watch<AuthProvider>().error!,
-                                    style: TextStyle(color: Colors.red),
+                                    style: const TextStyle(color: Colors.red),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        SizedBox(height: 40),
+
+                        const SizedBox(height: 40),
+
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 50),
+                            padding: const EdgeInsets.symmetric(horizontal: 50),
                             child: Consumer<AuthProvider>(
                               builder: (context, authProvider, _) {
                                 return ElevatedButton(
@@ -180,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
-                                              SnackBar(
+                                              const SnackBar(
                                                 content: Text(
                                                   'Por favor completa todos los campos',
                                                 ),
@@ -200,7 +298,7 @@ class _LoginPageState extends State<LoginPage> {
                                           }
                                         },
                                   child: authProvider.isLoading
-                                      ? SizedBox(
+                                      ? const SizedBox(
                                           height: 20,
                                           width: 20,
                                           child: CircularProgressIndicator(
@@ -211,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 ),
                                           ),
                                         )
-                                      : Text(
+                                      : const Text(
                                           "Login",
                                           style: TextStyle(
                                             color: Colors.white,
@@ -223,7 +321,9 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 30),
+
+                        const SizedBox(height: 30),
+
                         Row(
                           children: <Widget>[
                             Expanded(
@@ -243,7 +343,7 @@ class _LoginPageState extends State<LoginPage> {
                                       '/main',
                                     );
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     "Continue as Guest",
                                     style: TextStyle(
                                       color: Colors.white,
@@ -253,9 +353,9 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 30),
-                            Text("or"),
-                            SizedBox(width: 30),
+                            const SizedBox(width: 30),
+                            const Text("or"),
+                            const SizedBox(width: 30),
                             Expanded(
                               child: SizedBox(
                                 height: 50,
@@ -275,7 +375,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     );
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     "Make a new account",
                                     style: TextStyle(
                                       color: Colors.white,

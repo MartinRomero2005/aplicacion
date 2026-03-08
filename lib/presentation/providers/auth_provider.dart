@@ -14,30 +14,17 @@ class AuthProvider extends ChangeNotifier {
   bool get isGuest => _isGuest;
   bool get isAuthenticated => _currentUser != null || _isGuest;
 
-  // 🔥 IP de tu computadora en la red WiFi
   final String baseUrl = "http://192.168.1.4:3000/api/auth";
 
   Future<bool> register(String name, String email, String password) async {
     _setLoading(true);
 
     try {
-      print("Enviando registro...");
-      print("URL: $baseUrl/register");
-
-      final response = await http
-          .post(
-            Uri.parse("$baseUrl/register"),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode({
-              "name": name,
-              "email": email,
-              "password": password,
-            }),
-          )
-          .timeout(const Duration(seconds: 10));
-
-      print("Respuesta registro: ${response.statusCode}");
-      print("Body: ${response.body}");
+      final response = await http.post(
+        Uri.parse("$baseUrl/register"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"name": name, "email": email, "password": password}),
+      );
 
       final data = jsonDecode(response.body);
 
@@ -52,7 +39,6 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print("Error en register: $e");
       _error = "Error de conexión con el servidor";
       notifyListeners();
       return false;
@@ -65,19 +51,11 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
 
     try {
-      print("Enviando login...");
-      print("URL: $baseUrl/login");
-
-      final response = await http
-          .post(
-            Uri.parse("$baseUrl/login"),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode({"email": email, "password": password}),
-          )
-          .timeout(const Duration(seconds: 10));
-
-      print("Respuesta login: ${response.statusCode}");
-      print("Body: ${response.body}");
+      final response = await http.post(
+        Uri.parse("$baseUrl/login"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": password}),
+      );
 
       final data = jsonDecode(response.body);
 
@@ -92,8 +70,63 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print("Error en login: $e");
       _error = "No se pudo conectar al servidor";
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> verifyEmail(String email) async {
+    _setLoading(true);
+
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/verify-email"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email}),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        _error = data["message"] ?? "Correo no encontrado";
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _error = "Error de conexión";
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> resetPassword(String email, String newPassword) async {
+    _setLoading(true);
+
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/reset-password"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": newPassword}),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        _error = data["message"] ?? "No se pudo cambiar la contraseña";
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _error = "Error de conexión";
       notifyListeners();
       return false;
     } finally {
