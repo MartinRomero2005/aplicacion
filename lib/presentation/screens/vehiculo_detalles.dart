@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:prototipo/data/models/vehiculo.dart';
+import 'package:prototipo/presentation/providers/cart_provider.dart';
 import 'pago.dart';
 
 class VehiculoDetalles extends StatelessWidget {
@@ -9,8 +11,11 @@ class VehiculoDetalles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cart = context.read<CartProvider>();
+
     return Scaffold(
       appBar: AppBar(title: Text(vehiculo.nombre)),
+
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,10 +26,12 @@ class VehiculoDetalles extends StatelessWidget {
               height: 250,
               fit: BoxFit.cover,
             ),
+
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(vehiculo.marca, style: const TextStyle(fontSize: 18)),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -32,6 +39,7 @@ class VehiculoDetalles extends StatelessWidget {
                 style: const TextStyle(fontSize: 16),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
@@ -39,6 +47,7 @@ class VehiculoDetalles extends StatelessWidget {
                 style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
@@ -49,23 +58,35 @@ class VehiculoDetalles extends StatelessWidget {
                 ),
               ),
             ),
+
+            /// BOTÓN COMPRAR
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SizedBox(
                 width: double.infinity,
+
                 child: ElevatedButton(
                   onPressed: () {
+                    /// agrega al carrito
+                    cart.addItem(
+                      vehiculo.id,
+                      vehiculo.nombre,
+                      vehiculo.precio,
+                      vehiculo.imagen,
+                    );
+
+                    /// ir a pago
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => PagoScreen(vehiculo: vehiculo),
-                      ),
+                      MaterialPageRoute(builder: (_) => const PagoScreen()),
                     );
                   },
+
                   child: const Text('Comprar ahora'),
                 ),
               ),
             ),
+
             const SizedBox(height: 24),
           ],
         ),

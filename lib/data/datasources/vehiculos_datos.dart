@@ -2,6 +2,7 @@ import 'package:prototipo/data/models/vehiculo.dart';
 
 final List<Vehiculo> vehiculos = [
   Vehiculo(
+    id: 'v1',
     nombre: 'Pulsar NS 200',
     marca: 'Bajaj',
     imagen:
@@ -14,7 +15,9 @@ final List<Vehiculo> vehiculos = [
     fuelType: 'Gasolina',
     condition: 'new',
   ),
+
   Vehiculo(
+    id: 'v2',
     nombre: 'XTZ 150',
     marca: 'Yamaha',
     imagen: 'https://rubemotos.com/wp-content/uploads/2024/08/xtz1502024.png',
@@ -26,7 +29,9 @@ final List<Vehiculo> vehiculos = [
     fuelType: 'Gasolina',
     condition: 'used',
   ),
+
   Vehiculo(
+    id: 'v3',
     nombre: 'Ninja ZX-6R',
     marca: 'Kawasaki',
     imagen:
@@ -39,7 +44,9 @@ final List<Vehiculo> vehiculos = [
     fuelType: 'Gasolina',
     condition: 'new',
   ),
+
   Vehiculo(
+    id: 'v4',
     nombre: 'CB500X',
     marca: 'Honda',
     imagen:
@@ -52,7 +59,9 @@ final List<Vehiculo> vehiculos = [
     fuelType: 'Gasolina',
     condition: 'used',
   ),
+
   Vehiculo(
+    id: 'v5',
     nombre: 'Scooter GTS 300',
     marca: 'Piaggio',
     imagen:

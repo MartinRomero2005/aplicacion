@@ -1,16 +1,18 @@
 class Vehiculo {
+  final String id;
   final String nombre;
   final String marca;
   final String imagen;
-  final int precio;
+  final double precio;
   final int cc;
   final String categoria;
   final int year;
   final String mileage;
   final String fuelType;
-  final String condition; // e.g. "new", "used", "certified"
+  final String condition;
 
   Vehiculo({
+    required this.id,
     required this.nombre,
     required this.marca,
     required this.imagen,
