@@ -3,7 +3,7 @@ import 'dart:convert';
 import '../models/user_model.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://localhost:3000/api/auth';
+  static const String baseUrl = 'http://192.168.1.4:3000/api/auth';
 
   Future<Map<String, dynamic>> register(String email, String password) async {
     try {

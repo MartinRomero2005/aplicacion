@@ -14,17 +14,25 @@ class AuthProvider extends ChangeNotifier {
   bool get isGuest => _isGuest;
   bool get isAuthenticated => _currentUser != null || _isGuest;
 
-  final String baseUrl = "http://192.168.1.4:3000/api/auth";
+  // Detecta si es debug (emulador) o release (APK)
+  final String baseUrl = const bool.fromEnvironment('dart.vm.product')
+      ? "http://192.168.1.4:3000/api/auth"
+      : "http://10.0.2.2:3000/api/auth";
 
   Future<bool> register(String name, String email, String password) async {
     _setLoading(true);
 
     try {
+      print("REGISTER → $baseUrl/register");
+
       final response = await http.post(
         Uri.parse("$baseUrl/register"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"name": name, "email": email, "password": password}),
       );
+
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
 
       final data = jsonDecode(response.body);
 
@@ -39,6 +47,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
+      print("REGISTER ERROR: $e");
       _error = "Error de conexión con el servidor";
       notifyListeners();
       return false;
@@ -51,11 +60,17 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
 
     try {
+      print("LOGIN → $baseUrl/login");
+      print("EMAIL: $email");
+
       final response = await http.post(
         Uri.parse("$baseUrl/login"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "password": password}),
       );
+
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
 
       final data = jsonDecode(response.body);
 
@@ -70,6 +85,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
+      print("LOGIN ERROR: $e");
       _error = "No se pudo conectar al servidor";
       notifyListeners();
       return false;
@@ -82,22 +98,33 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
 
     try {
+      print("VERIFY EMAIL → $baseUrl/verify-email");
+      print("EMAIL: $email");
+
       final response = await http.post(
         Uri.parse("$baseUrl/verify-email"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
 
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
+
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         return true;
+      } else if (response.statusCode == 404) {
+        _error = "Correo no encontrado";
+        notifyListeners();
+        return false;
       } else {
-        _error = data["message"] ?? "Correo no encontrado";
+        _error = data["message"] ?? "Error del servidor";
         notifyListeners();
         return false;
       }
     } catch (e) {
+      print("VERIFY ERROR: $e");
       _error = "Error de conexión";
       notifyListeners();
       return false;
@@ -110,11 +137,16 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
 
     try {
+      print("RESET PASSWORD → $baseUrl/reset-password");
+
       final response = await http.post(
         Uri.parse("$baseUrl/reset-password"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "password": newPassword}),
       );
+
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
 
       final data = jsonDecode(response.body);
 
@@ -126,6 +158,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
+      print("RESET ERROR: $e");
       _error = "Error de conexión";
       notifyListeners();
       return false;

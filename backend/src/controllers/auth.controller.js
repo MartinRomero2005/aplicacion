@@ -1,9 +1,11 @@
 const db = require("../config/database");
 const bcrypt = require("bcryptjs");
 
+// =============================
 // REGISTER
+// =============================
 const register = async (req, res) => {
-  console.log("🔥 REGISTER ENDPOINT HIT 🔥"); // Para debug
+  console.log("🔥 REGISTER ENDPOINT HIT 🔥");
 
   const { name, email, password } = req.body;
 
@@ -16,7 +18,7 @@ const register = async (req, res) => {
 
     db.run(
       `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`,
-      [name, email, hashedPassword],
+      [name.trim(), email.trim().toLowerCase(), hashedPassword],
       function (err) {
         if (err) {
           console.error("DB ERROR:", err.message);
@@ -39,9 +41,11 @@ const register = async (req, res) => {
   }
 };
 
+// =============================
 // LOGIN
+// =============================
 const login = (req, res) => {
-  console.log("🔥 LOGIN ENDPOINT HIT 🔥"); // Para debug
+  console.log("🔥 LOGIN ENDPOINT HIT 🔥");
 
   const { email, password } = req.body;
 
@@ -49,11 +53,19 @@ const login = (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  const cleanEmail = email.trim().toLowerCase();
+
   db.get(
-    `SELECT * FROM users WHERE email = ?`,
-    [email],
+    `SELECT * FROM users WHERE LOWER(email) = ?`,
+    [cleanEmail],
     async (err, user) => {
-      if (err || !user) {
+      if (err) {
+        console.error("DB ERROR:", err);
+        return res.status(500).json({ message: "Server error" });
+      }
+
+      if (!user) {
+        console.log("❌ USER NOT FOUND:", cleanEmail);
         return res.status(400).json({ message: "Invalid credentials" });
       }
 
@@ -75,4 +87,95 @@ const login = (req, res) => {
   );
 };
 
-module.exports = { register, login };
+// =============================
+// VERIFY EMAIL
+// =============================
+const verifyEmail = (req, res) => {
+  const { email } = req.body;
+
+  console.log("📩 VERIFY EMAIL REQUEST:", email);
+
+  if (!email) {
+    return res.status(400).json({ message: "Email requerido" });
+  }
+
+  const cleanEmail = email.trim().toLowerCase();
+
+  db.get(
+    `SELECT id FROM users WHERE LOWER(email) = ?`,
+    [cleanEmail],
+    (err, user) => {
+
+      console.log("🔍 DB RESULT:", user);
+
+      if (err) {
+        console.error("DB ERROR:", err);
+        return res.status(500).json({ message: "Error del servidor" });
+      }
+
+      if (!user) {
+        console.log("❌ EMAIL NOT FOUND:", cleanEmail);
+        return res.status(404).json({ message: "Correo no encontrado" });
+      }
+
+      console.log("✅ EMAIL FOUND:", cleanEmail);
+
+      return res.status(200).json({
+        message: "Correo válido",
+      });
+    }
+  );
+};
+
+// =============================
+// RESET PASSWORD
+// =============================
+const resetPassword = async (req, res) => {
+  const { email, password } = req.body;
+
+  console.log("🔑 RESET PASSWORD REQUEST:", email);
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Datos incompletos" });
+  }
+
+  const cleanEmail = email.trim().toLowerCase();
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    db.run(
+      `UPDATE users SET password = ? WHERE LOWER(email) = ?`,
+      [hashedPassword, cleanEmail],
+      function (err) {
+
+        if (err) {
+          console.error("DB ERROR:", err);
+          return res.status(500).json({ message: "Error del servidor" });
+        }
+
+        if (this.changes === 0) {
+          console.log("❌ USER NOT FOUND FOR PASSWORD RESET");
+          return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        console.log("✅ PASSWORD UPDATED");
+
+        return res.status(200).json({
+          message: "Contraseña actualizada correctamente",
+        });
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  verifyEmail,
+  resetPassword,
+};
